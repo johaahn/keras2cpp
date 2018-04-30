@@ -13,6 +13,7 @@ from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.utils import np_utils
+from keras import backend as K
 
 batch_size = 128
 nb_classes = 10
@@ -45,9 +46,9 @@ Y_train = np_utils.to_categorical(y_train, nb_classes)
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
 model = Sequential()
-
-model.add(Convolution2D(nb_filters, nb_conv, nb_conv, border_mode='same',
-                        input_shape=(img_rows, img_cols, 1)))
+a = Convolution2D(nb_filters, nb_conv, nb_conv, border_mode='same',
+                        input_shape=(img_rows, img_cols, 1))
+model.add(a)
 model.add(Activation('relu'))
 model.add(Convolution2D(nb_filters, nb_conv, nb_conv, border_mode='same'))
 model.add(Activation('relu'))
@@ -86,7 +87,20 @@ print('Prediction on saved sample:')
 print(X_train.shape)
 print(X_train[None,500,:,:,:].shape)
 print(str(model.predict(X_train[None,500,:,:,:])))
+
+inp = model.input
+outputs = [layer.output for layer in model.layers]          # all layer outputs
+functor = K.function([inp]+ [K.learning_phase()], outputs ) # evaluation function
+
+
+# Testing
+test = X_train[None,500,:,:,:]
+layer_outs = functor([test])
+print(layer_outs)
+print(str(model.predict(test)))
+print(str(model.predict(test)))
+
+
 # on my pc I got:
 #[[ 0.03729606  0.00783805  0.06588034  0.21728528  0.01093729  0.34730983
 #   0.01350389  0.02174525  0.26624694  0.01195715]]
-

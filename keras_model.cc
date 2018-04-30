@@ -272,7 +272,8 @@ std::vector< std::vector<float> > keras::conv_single_depth_same(
   size_t max_imc = im.size() - 1;
   size_t max_imr = im[0].size() - 1;
   std::vector< std::vector<float> > y(im.size(), vector<float>(im[0].size(), 0));
-
+  cout <<"IM"<< im.size() << " "<< im[0].size()<< endl;
+  cout <<"K"<< k.size() << " "<< k[0].size()<< endl;
   for(unsigned int i = 0; i < im.size(); ++i) {
     for(unsigned int j = 0; j < im[0].size(); ++j) {
       float sum = 0;
@@ -313,6 +314,7 @@ keras::DataChunk* keras::LayerConv2D::compute_output(keras::DataChunk* dc) {
     y_ret.push_back(tmp);
   }
 
+  cout << "KERNEL" << m_kernels.size() << " " << im.size() << endl;
   for(unsigned int j = 0; j < m_kernels.size(); ++j) { // loop over kernels
     for(unsigned int m = 0; m < im.size(); ++m) { // loope over image depth
 
@@ -332,10 +334,17 @@ keras::DataChunk* keras::LayerConv2D::compute_output(keras::DataChunk* dc) {
         y_ret[j][x][y] += m_bias[j];
       }
     }
+
+    for(unsigned int x = 0; x < y_ret[0].size(); ++x) {
+      for(unsigned int y = 0; y < y_ret[0][0].size(); ++y) {
+        cout << "j:"<<j << " x:" << x << " y:"<<y << " = "<< y_ret[j][x][y] << endl;
+      }
+    }
   }
 
   keras::DataChunk *out = new keras::DataChunk2D();
   out->set_data(y_ret);
+
   return out;
 }
 
