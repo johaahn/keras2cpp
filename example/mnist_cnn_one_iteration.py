@@ -30,8 +30,8 @@ nb_conv = 3
 # the data, shuffled and split between train and test sets
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
-X_train = X_train.reshape(X_train.shape[0], 1, img_rows, img_cols)
-X_test = X_test.reshape(X_test.shape[0], 1, img_rows, img_cols)
+X_train = X_train.reshape(X_train.shape[0], img_rows, img_cols, 1)
+X_test = X_test.reshape(X_test.shape[0], img_rows, img_cols, 1)
 X_train = X_train.astype('float32')
 X_test = X_test.astype('float32')
 X_train /= 255
@@ -47,7 +47,7 @@ Y_test = np_utils.to_categorical(y_test, nb_classes)
 model = Sequential()
 
 model.add(Convolution2D(nb_filters, nb_conv, nb_conv, border_mode='same',
-                        input_shape=(1, img_rows, img_cols)))
+                        input_shape=(img_rows, img_cols, 1)))
 model.add(Activation('relu'))
 model.add(Convolution2D(nb_filters, nb_conv, nb_conv, border_mode='same'))
 model.add(Activation('relu'))
@@ -75,14 +75,17 @@ model.save_weights('./my_nn_weights.h5', overwrite=True)
 # store one sample in text file
 with open("./sample_mnist.dat", "w") as fin:
     fin.write("1 28 28\n")
-    a = X_train[0,0]
+    print(X_train.shape)
+    a = X_train[500,:,:,0]
     for b in a:
         fin.write(str(b)+'\n')
 
 # get prediction on saved sample
 # c++ output should be the same ;)
 print('Prediction on saved sample:')
-print(str(model.predict(X_train[:1])))
+print(X_train.shape)
+print(X_train[None,500,:,:,:].shape)
+print(str(model.predict(X_train[None,500,:,:,:])))
 # on my pc I got:
 #[[ 0.03729606  0.00783805  0.06588034  0.21728528  0.01093729  0.34730983
 #   0.01350389  0.02174525  0.26624694  0.01195715]]

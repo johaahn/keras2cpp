@@ -410,6 +410,8 @@ void keras::KerasModel::load_weights(const string &input_fname) {
   string tmp_str = "";
   int tmp_int = 0;
 
+  /* FIXME NO FILE .... */
+
   fin >> tmp_str >> m_layers_cnt;
   if(m_verbose) cout << "Layers " << m_layers_cnt << endl;
 
@@ -418,7 +420,7 @@ void keras::KerasModel::load_weights(const string &input_fname) {
     if(m_verbose) cout << "Layer " << tmp_int << " " << layer_type << endl;
 
     Layer *l = 0L;
-    if(layer_type == "Convolution2D") {
+    if(layer_type == "Convolution2D" || layer_type == "Conv2D") {
       l = new LayerConv2D();
     } else if(layer_type == "Activation") {
       l = new LayerActivation();
